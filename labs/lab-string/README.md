@@ -277,7 +277,7 @@ Los tests de `IsEmpty` ya están activos en `StringTest.c`. Corré `make test` y
 
 **P1** — `IsEmpty` podría haberse escrito también como `return s[0] == '\0'`. ¿Son equivalentes? ¿Por qué?
 
-> R:
+> R: Si, ya que tambien se esta accediendo al primer carcter de una secuencia de caracteres
 
 ---
 
@@ -328,14 +328,14 @@ make test
 
 **P2** — ¿Qué hace `s + 1`? ¿Por qué avanza al siguiente carácter y no al siguiente byte?
 
-> R:
+> R:Porque esta avanzanzo al siguiente elemento del arreglo de tamaño char, por lo que avanza un caracter
 
 **P3** — Si llamaras a `GetLength(NULL)`, ¿qué pasaría? ¿Por qué las precondiciones del contrato dicen `s != NULL`?
 
-> R:
+> R:El programa desreferenciaria NULL al ser llamada la funcion isEmpty lo cual genera comportamiento indefinido. Las condicion del contrato justamente esta especificando que el comportamiento de la funcion no esta pensada para recibir NULL por lo que romperia el programa intentarlo.
 
 ```
-GETLENGTH_PASA=
+GETLENGTH_PASA=SI
 ```
 _(escribí SI cuando todos los tests de GetLength pasen)_
 
@@ -367,7 +367,8 @@ El `while` termina cuando alguna de las dos cadenas llega a `'\0'`. Después dev
 
 **P4** — ¿Qué dos casos están mal cubiertos por `return 1`? Describí un ejemplo para cada uno.
 
-> R:
+> R:Los dos casos que no estan cubiertos son que pasa si un string es mas largo que el otro pero coinciden en todos los caracteres hasta que una cadena se termina y devuelve 1 erroneamente. Ejemplo: s1 = "hija" y s2 = "hijastra", el while evaluaria la condicion 5 veces hasta que s1 lo encuentra vacio y termina la funcion devolviendo un 1 cuando en realidad las 2 cadenas no son iguales.
+
 
 #### Corrección
 
@@ -384,7 +385,7 @@ make test
 ```
 
 ```
-AREEQUAL_PASA=
+AREEQUAL_PASA=SI
 ```
 _(escribí SI cuando todos los tests de AreEqual pasen)_
 
@@ -414,7 +415,7 @@ int AreDecimalDigits(const char *s) {
 
 **P5** — ¿Por qué la cadena vacía no debería considerarse un conjunto de dígitos decimales? Pensalo desde la especificación matemática.
 
-> R:
+> R: la cadena vacia no posee digitos decimales, por lo que considerar la ausencia de digitos como que todos son digitos estaria mal. Además la especificación define AreDecimalDigits(ε) = 0, y su caso base exige |s| = 1, o sea, al menos un carácter
 
 #### Corrección
 
@@ -425,7 +426,7 @@ make test
 ```
 
 ```
-AREDECIMALDIGITS_PASA=
+AREDECIMALDIGITS_PASA=SI
 ```
 _(escribí SI cuando todos los tests de AreDecimalDigits pasen)_
 
@@ -452,7 +453,7 @@ make test
 ```
 
 ```
-CONTAINS_PASA=
+CONTAINS_PASA=SI
 ```
 _(escribí SI cuando todos los tests de Contains pasen)_
 
@@ -467,7 +468,7 @@ Antes de implementar, discutí con tu equipo:
 
 **P6** — Conclusión de la discusión:
 
-> R:
+> R:Para mi es mejor tenerla en un modulo separado, por el simple hecho de mantener las responsabilidades separadas, mientras String maneje funciones relacionadas a la cadena en si, Conversion se encarga de convetir el string a otro tipo
 
 ---
 
@@ -494,7 +495,7 @@ int ToInteger(const char *s) {
 
 **P7** — El loop acumula correctamente el valor en `resultado`. ¿Qué está mal en el `return`?
 
-> R:
+> R:El return esta mal porque solo devuelve signo (1 || -1) y no tiene en cuenta el valor acumulado en la variable resultado.
 
 #### Corrección
 
@@ -506,10 +507,10 @@ make test
 
 **P8** — La expresión `*s - '0'` convierte un carácter dígito al entero correspondiente. ¿Por qué funciona? ¿Qué devuelve `'3' - '0'`?
 
-> R:
+> R:Funciona porque en C los caracteres son enteros  y los dígitos 0 a 9 tienen códigos consecutivos, así que restarle 0 da el valor numérico del dígito. En ASCII, '3' - '0' = 51 - 48 = 3.
 
 ```
-TOINTEGER_PASA=
+TOINTEGER_PASA=SI
 ```
 _(escribí SI cuando todos los tests de ToInteger pasen)_
 
@@ -562,7 +563,7 @@ foo
 
 **P9** — ¿Por qué `(void)argc` suprime un warning? ¿Cuándo sería necesario usar `argc`?
 
-> R:
+> R:Suprime un warning ya que si una funcion recibe un parametro y no lo usa tira un warning. Es necesario para cuando se quiere saber la cantidad de argumentos que se utilizaron.
 
 ---
 
@@ -589,7 +590,7 @@ Salida esperada:
 ```
 
 ```
-LONGITUDES_PASA=
+LONGITUDES_PASA=SI
 ```
 _(SI o NO)_
 
@@ -616,7 +617,7 @@ make mayorlongitud
 ```
 
 ```
-MAYORLONGITUD_PASA=
+MAYORLONGITUD_PASA=SI
 ```
 _(SI o NO)_
 
@@ -635,7 +636,7 @@ make todosiguales
 ```
 
 ```
-TODOSIGUALES_PASA=
+TODOSIGUALES_PASA=SI
 ```
 _(SI o NO)_
 
@@ -652,7 +653,7 @@ make suma
 ```
 
 ```
-SUMA_PASA=
+SUMA_PASA=SI
 ```
 _(SI o NO)_
 
@@ -662,15 +663,15 @@ _(SI o NO)_
 
 **P10** — `GetLength` es recursiva pero en C una llamada recursiva consume un stack frame. Si llamaras `GetLength` con un string de 1.000.000 de caracteres, ¿qué pasaría? ¿Cómo lo resolverías?
 
-> R:
+> R:Con 1.000.000 se reservarian un millonde frames apilados a las vez y se termianria generando un stack overflow y el programa terminaria con un segmentation fault. Se resuelve escribiendo GetLength de forma iterativa, con un loop que avanza el puntero y cuenta los caracteres, que usa un solo frame sin importar la longitud del string.
 
 **P11** — En la Parte III, todos los programas usan `char **arg` para iterar en vez de un índice entero. ¿Qué ventaja tiene este estilo? ¿Cuándo sería preferible usar el índice?
 
-> R:
+> R:Ese estilo tiene la ventaja que se recorre argv como un string, por lo que no hace falta argc en cada iteracion sino que se avanza hatsa un centinela. El índice es preferible cuando importa la posición del argumento, por ejemplo para mostrar su número, acceder directo a uno
 
 **P12** — En C, `"hola"` es un literal de tipo `const char *`. Si intentaras modificar un carácter con `s[0] = 'H'`, el comportamiento es indefinido. ¿Por qué? ¿En qué parte de la memoria viven los literales?
 
-> R:
+> R:Los literales viven en la memoria estatica, en una zona de solo lectura. Modificarlos seria comportamiento indefinido debido a que no se garantiza que esa memoria se pueda escribir.
 
 ---
 
